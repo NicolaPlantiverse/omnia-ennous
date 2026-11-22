@@ -2,20 +2,147 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="description" content="OMNIA, la memoria delle tue cartelle per te, Claude e Codex. Solo su invito.">
 <title>OMNIA</title>
 <style>
+/* Pagina pubblica di OMNIA: la rete a sinistra (in alto sul telefono), le parole nel pannello accanto, mai sopra la rete. */
 @font-face{font-family:Michroma;src:url(fonts/michroma-latin.woff2) format('woff2');font-display:swap}
 @font-face{font-family:Inter;src:url(fonts/inter-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
-:root{color-scheme:dark}
-html,body{margin:0;height:100%;background:#02030a;color:#f2f4fb}
-body{display:grid;place-items:center;text-align:center;padding:0 20px;font:300 14px/1.6 Inter,-apple-system,sans-serif}
-.p{width:14px;height:14px;border-radius:50%;margin:0 auto 34px;background:#fff;box-shadow:0 0 30px 8px rgba(150,190,255,.55);animation:b 4s ease-in-out infinite}
-@keyframes b{50%{box-shadow:0 0 50px 16px rgba(150,190,255,.35)}}
-h1{margin:0 0 18px;font:400 clamp(28px,6vw,52px)/1 Michroma,sans-serif;letter-spacing:.3em;margin-right:-.3em}
-p{margin:0;color:#8f97b8;font:400 10px/1.8 Michroma,sans-serif;letter-spacing:.36em}
+:root{color-scheme:dark;--void:#02030a;--ink:#f2f4fb;--mute:#8f97b8;--line:rgba(170,185,230,.18);--azure:#7fd3ff;--rose:#ffb3c0;
+  --wide:Michroma,"Eurostile","Arial Black",sans-serif;--sans:Inter,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--void);color:var(--ink);font:14px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+.top{position:fixed;left:0;right:0;top:0;z-index:3;padding:calc(env(safe-area-inset-top,0px) + 20px) max(22px,env(safe-area-inset-right,0px)) 0 max(22px,env(safe-area-inset-left,0px));font:400 11px/1 var(--wide);letter-spacing:.5em}
+main{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-columns:1fr minmax(320px,440px);gap:48px;padding:90px max(22px,5vw) 40px}
+.net{min-height:200px}
+.panel{display:flex;flex-direction:column;justify-content:center;gap:22px}
+.eyebrow{font:400 9px/1 var(--wide);letter-spacing:.42em;color:var(--mute)}
+h1{margin:0;font:400 clamp(34px,4.6vw,58px)/1.05 var(--wide);letter-spacing:.28em;margin-right:-.28em;text-shadow:0 0 30px rgba(127,211,255,.4),0 0 90px rgba(140,150,255,.22)}
+.lead{margin:0;font:400 clamp(12px,1.3vw,14px)/1.8 var(--wide);letter-spacing:.12em;text-transform:uppercase;max-width:30ch}
+.txt{margin:0;color:#cfd5ee;font-weight:300;max-width:46ch}
+form{display:flex;flex-direction:column;gap:14px;max-width:360px}
+label{display:flex;flex-direction:column;gap:8px;font:400 8.5px/1 var(--wide);letter-spacing:.4em;color:var(--mute)}
+input{all:unset;box-sizing:border-box;width:100%;font:400 16px/1 var(--sans);letter-spacing:.06em;color:#fff;padding:12px 2px 10px;border-bottom:1px solid rgba(200,210,245,.3);text-transform:uppercase}
+input:focus{border-bottom-color:#fff}
+input:focus-visible{box-shadow:0 1px 0 0 var(--azure)}
+button{all:unset;cursor:pointer;margin-top:8px;text-align:center;font:400 10.5px/1 var(--wide);letter-spacing:.42em;color:#03040a;background:#f2f4fb;padding:16px 0 16px .42em;border-radius:2px}
+button:hover{background:#fff;box-shadow:0 0 50px rgba(127,211,255,.35)}
+button:focus-visible{outline:2px solid var(--azure);outline-offset:3px}
+button[disabled]{opacity:.55;cursor:wait}
+.msg{min-height:1.4em;margin:0;font-size:12.5px;color:var(--rose)}
+.ok{color:#9fe8c0}
+.steps{display:none;flex-direction:column;gap:14px;max-width:440px}
+.steps.on{display:flex}
+.tabs{display:flex;gap:6px}
+.tabs button{all:unset;cursor:pointer;font:500 9.5px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);padding:9px 12px;border:1px solid var(--line);border-radius:999px}
+.tabs button[aria-pressed="true"]{color:#fff;border-color:rgba(210,220,255,.55)}
+ol{margin:0;padding-left:18px;color:#d6dcf3;font-weight:300;display:flex;flex-direction:column;gap:8px}
+code{font:400 12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:4px;padding:2px 6px;color:#fff;word-break:break-all}
+.small{font-size:11.5px;color:rgba(143,151,184,.85);margin:0;max-width:46ch}
+@media (max-width:860px){main{grid-template-columns:1fr;gap:10px;padding-top:70px}.net{height:38vh;min-height:220px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
-<body><main><div class="p"></div><h1>OMNIA</h1><p>SOLO SU INVITO</p></main></body>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<div class="top">OMNIA</div>
+<main>
+  <div class="net" id="net"></div>
+  <section class="panel">
+    <div class="eyebrow">SOLO SU INVITO</div>
+    <h1>OMNIA</h1>
+    <p class="lead">La memoria delle tue cartelle, per te, Claude e Codex</p>
+    <p class="txt">OMNIA legge solo le cartelle che scegli, sul tuo computer, e ne fa una rete di documenti e concetti che puoi esplorare e che i tuoi agenti consultano prima di rispondere. I documenti non lasciano mai il tuo computer.</p>
+    <form id="f" novalidate>
+      <label for="codice">CODICE INVITO<input id="codice" type="text" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="OMN-XXXX-XXXX-XXXX-XXXX"></label>
+      <button type="submit" id="go">SCARICA OMNIA</button>
+      <p class="msg" id="m" role="alert"></p>
+    </form>
+    <div class="steps" id="steps">
+      <div class="eyebrow">INSTALLAZIONE</div>
+      <div class="tabs" role="group" aria-label="Sistema"><button type="button" data-os="mac" aria-pressed="true">Mac</button><button type="button" data-os="win" aria-pressed="false">Windows</button><button type="button" data-os="linux" aria-pressed="false">Linux</button></div>
+      <ol id="ol"></ol>
+      <p class="small">Al primo avvio OMNIA ti chiede di nuovo il codice invito, un nome e una password. Al server degli inviti vanno solo codice, nome, sistema, versione e un numero casuale dell'installazione: mai documenti, nomi di file, ricerche o la password.</p>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+const API = 'https://omnia-inviti.fancy-snow-8c71.workers.dev';
+const $ = id => document.getElementById(id);
+let cartella = 'omnia';
+const PASSI = {
+  mac: () => [`Apri lo zip scaricato: nasce la cartella <code>${cartella}</code>.`, 'Apri il Terminale (Applicazioni › Utility).',
+              `Scrivi <code>bash ~/Downloads/${cartella}/install.sh</code> e premi Invio.`, 'Si apre il benvenuto nel browser: da lì fai tutto.'],
+  win: () => [`Fai clic destro sullo zip e scegli «Estrai tutto»: nasce la cartella <code>${cartella}</code>.`, 'Apri PowerShell dal menu Start.',
+              `Scrivi <code>powershell -ExecutionPolicy Bypass -File $HOME\\Downloads\\${cartella}\\${cartella}\\install.ps1</code> e premi Invio.`,
+              'Si apre il benvenuto nel browser: da lì fai tutto.'],
+  linux: () => [`Estrai lo zip: <code>unzip ~/Downloads/${cartella}.zip -d ~</code>`, `Lancia <code>bash ~/${cartella}/install.sh</code>`,
+                'Si apre il benvenuto nel browser; senza browser, codice, nome e password si scrivono nel terminale.']
+};
+function passi(os) {
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.os === os)));
+  $('ol').innerHTML = PASSI[os]().map(t => `<li>${t}</li>`).join('');
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => passi(b.dataset.os)));
+const ua = navigator.userAgent; passi(/Windows/.test(ua) ? 'win' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : 'mac');
+
+$('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const codice = $('codice').value.trim(), m = $('m'), b = $('go');
+  if (codice.replace(/[^A-Za-z0-9]/g, '').length < 8) { m.className = 'msg'; m.textContent = 'Scrivi il codice invito che hai ricevuto.'; return $('codice').focus(); }
+  b.disabled = true; b.textContent = 'CONTROLLO…'; m.textContent = '';
+  try {
+    const r = await fetch(API + '/v1/scarica', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({codice})});
+    const tipo = r.headers.get('content-type') || '';
+    if (!r.ok || !tipo.includes('zip')) {
+      const j = await r.json().catch(() => ({}));
+      m.className = 'msg'; m.textContent = j.motivo || 'Download non riuscito: riprova tra poco.'; return;
+    }
+    const blob = await r.blob();
+    const nome = ((r.headers.get('content-disposition') || '').match(/filename="([^"]+)"/) || [])[1] || 'omnia.zip';
+    cartella = nome.replace(/\.zip$/, '');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    m.className = 'msg ok'; m.textContent = `Scaricato ${nome} (versione ${r.headers.get('x-omnia-versione') || ''}). Ora installalo:`;
+    passi(document.querySelector('.tabs button[aria-pressed="true"]').dataset.os); $('steps').classList.add('on');
+  } catch (err) {
+    m.className = 'msg'; m.textContent = 'Il server degli inviti non risponde: controlla la connessione e riprova.';
+  } finally { b.disabled = false; b.textContent = 'SCARICA OMNIA'; }
+});
+
+/* rete di sfondo: un disegno, non dati */
+const cvs = $('c'), ctx = cvs.getContext('2d'), RED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COLS = ['127,211,255', '150,176,255', '236,226,200', '186,160,255', '140,232,214', '255,170,190', '190,200,225', '120,150,210'];
+let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647, g = () => Math.sqrt(-2 * Math.log(rnd() || 1e-9)) * Math.cos(6.283 * rnd());
+const P = [], L = [];
+for (let i = 0; i < 360; i++) {
+  const a = i % 8, y = 1 - (a + .5) / 8 * 2, r = Math.sqrt(1 - y * y), th = a * 2.39996;
+  let d = [Math.cos(th) * r + g() * .34, y * .82 + g() * .34, Math.sin(th) * r + g() * .34]; const l = Math.hypot(...d); d = d.map(v => v / l);
+  const rad = 34 + 250 * Math.pow(i / 360, .9) + g() * 10; P.push({a, p: d.map(v => v * rad), w: .6 + rnd() * rnd() * 2.4});
+  if (i > 3) for (let k = 0; k < 2; k++) { const j = Math.floor(rnd() * i); if (P[j].a === a || rnd() < .08) L.push([j, i]); }
+}
+const spr = COLS.map(c => { const e = document.createElement('canvas'); e.width = e.height = 64; const x = e.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, '#fff'); gr.addColorStop(.14, `rgba(${c},.92)`); gr.addColorStop(.42, `rgba(${c},.16)`); gr.addColorStop(1, `rgba(${c},0)`); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return e; });
+let W, H, CX, CY, R, rot = .4;
+function size() { const D = Math.min(2, devicePixelRatio || 1), n = $('net').getBoundingClientRect(); W = innerWidth; H = innerHeight;
+  cvs.width = W * D; cvs.height = H * D; ctx.setTransform(D, 0, 0, D, 0, 0); CX = n.left + n.width / 2; CY = n.top + n.height / 2; R = Math.max(80, Math.min(n.width, n.height) / 2 - 20); }
+addEventListener('resize', size); size();
+function frame() {
+  if (!RED) rot += .0012;
+  ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = '#02030a'; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+  const c = Math.cos(rot), sn = Math.sin(rot), cx = Math.cos(-.3), sx = Math.sin(-.3), sc = R / 330;
+  const Q = P.map(o => { let x = o.p[0] * c - o.p[2] * sn, z = o.p[0] * sn + o.p[2] * c; const y = o.p[1] * cx - z * sx; z = o.p[1] * sx + z * cx; const f = 1300 / (1300 + z); return [CX + x * f * sc, CY + y * f * sc, f]; });
+  ctx.lineWidth = .7;
+  for (const [i, j] of L) { const a = Q[i], b = Q[j]; ctx.strokeStyle = `rgba(${COLS[P[j].a]},${.1 * (a[2] + b[2]) / 2})`; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+  P.forEach((o, i) => { const q = Q[i], z = (3 + o.w * 2) * q[2] * Math.min(1.3, sc * 1.6); ctx.globalAlpha = Math.min(1, .2 + .45 * q[2]); ctx.drawImage(spr[o.a], q[0] - z, q[1] - z, z * 2, z * 2); });
+  ctx.globalAlpha = 1; requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
 </html>

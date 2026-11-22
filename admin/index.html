@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>OMNIA · Invitati</title>
+<style>@font-face{font-family:Michroma;src:url(../fonts/michroma-latin.woff2) format('woff2')}@font-face{font-family:Inter;src:url(../fonts/inter-latin.woff2) format('woff2');font-weight:100 900}</style>
+<style>
+:root{color-scheme:dark;--bg:#04050b;--panel:#0b0d18;--ink:#f2f4fb;--mute:#8f97b8;--line:rgba(170,185,230,.16);--azure:#7fd3ff;--ok:#8fe3b4;--warn:#ffd28a;--bad:#ffb3c0;
+  --wide:Michroma,"Eurostile","Arial Black",sans-serif;--sans:Inter,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);padding:28px max(16px,4vw) 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+.brand{font:400 12px/1 var(--wide);letter-spacing:.5em}
+.brand span{color:var(--mute);letter-spacing:.32em;margin-left:14px;font-size:10px}
+h2{font:400 10px/1 var(--wide);letter-spacing:.4em;color:var(--mute);margin:0 0 16px}
+section{margin-bottom:34px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+form{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;gap:7px;font:400 8.5px/1 var(--wide);letter-spacing:.35em;color:var(--mute);flex:1;min-width:160px}
+input{all:unset;box-sizing:border-box;width:100%;font:400 14px/1 var(--sans);color:#fff;padding:10px 2px 8px;border-bottom:1px solid rgba(200,210,245,.3)}
+input:focus{border-bottom-color:#fff}
+button{all:unset;cursor:pointer;font:400 9.5px/1 var(--wide);letter-spacing:.32em;padding:12px 16px 12px 19px;border-radius:2px;border:1px solid rgba(220,228,255,.45);color:#fff;white-space:nowrap}
+button.main{background:#f2f4fb;color:#03040a;border-color:#f2f4fb}
+button.small{font:500 10px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:7px 10px;border-color:var(--line);color:var(--mute)}
+button.small:hover,button:hover{border-color:#fff;color:#fff}
+button.main:hover{color:#03040a}
+button:focus-visible,input:focus-visible{outline:2px solid var(--azure);outline-offset:3px}
+.msg{min-height:1.3em;margin:10px 0 0;font-size:12.5px;color:var(--bad)}
+.new{margin-top:14px;padding:14px;border:1px dashed rgba(127,211,255,.5);border-radius:8px;display:none;gap:12px;align-items:center;flex-wrap:wrap}
+.new.on{display:flex}
+.new code{font:400 15px/1 var(--wide);letter-spacing:.12em;color:#fff}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font:400 22px/1 var(--wide);margin-bottom:8px;font-variant-numeric:tabular-nums}
+.tile span{font:500 9px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;min-width:760px}
+th{font:500 9px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 10px;border-bottom:1px solid var(--line)}
+td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+td code{font:400 11px/1.4 var(--wide);letter-spacing:.06em;color:#d8def5}
+.pill{display:inline-block;font:600 10px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:999px;border:1px solid currentColor}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.mute{color:var(--mute)}
+.pc{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:4px 0}
+.pc + .pc{border-top:1px dashed var(--line)}
+.pc small{display:block;color:var(--mute);font-size:11.5px}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+#gate{max-width:420px}
+.note{color:var(--mute);font-size:12px;margin:10px 0 0;max-width:70ch}
+</style>
+</head>
+<body>
+<header><div class="brand">OMNIA<span>INVITATI</span></div><button class="small" id="esci" type="button" hidden>Esci</button></header>
+
+<section id="gate" class="card">
+  <h2>CHIAVE</h2>
+  <form id="fKey"><label for="key">CHIAVE DI AMMINISTRAZIONE<input id="key" type="password" autocomplete="current-password"></label><button class="main" type="submit">APRI</button></form>
+  <p class="msg" id="mKey" role="alert"></p>
+  <p class="note">È la chiave ADMIN_TOKEN salvata sul server. Resta solo in questa scheda del browser e si dimentica quando la chiudi.</p>
+</section>
+
+<p class="msg" id="mErr" role="alert" hidden></p>
+<div id="app" hidden>
+  <div class="tiles">
+    <div class="tile"><b id="tInv">0</b><span>inviti</span></div>
+    <div class="tile"><b id="tAtt">0</b><span>computer con codice valido</span></div>
+    <div class="tile"><b id="t7">0</b><span>usati negli ultimi 7 giorni</span></div>
+    <div class="tile"><b id="tRev">0</b><span>revocati</span></div>
+  </div>
+
+  <section class="card">
+    <h2>NUOVO INVITO</h2>
+    <form id="fNew">
+      <label for="per">PER CHI<input id="per" type="text" autocomplete="off" placeholder="nome della persona"></label>
+      <label for="nota">NOTA<input id="nota" type="text" autocomplete="off" placeholder="facoltativa"></label>
+      <label for="maxc" style="flex:0 0 120px;min-width:120px">COMPUTER<input id="maxc" type="text" inputmode="numeric" value="2"></label>
+      <button class="main" type="submit">CREA CODICE</button>
+    </form>
+    <div class="new" id="newBox"><code id="newCode"></code><button class="small" id="copy" type="button">Copia</button><span class="mute" style="font-size:12px">Mandalo alla persona insieme al link del repository.</span></div>
+    <p class="msg" id="mNew" role="alert"></p>
+  </section>
+
+  <section>
+    <h2>INVITATI</h2>
+    <div class="wrap"><table>
+      <thead><tr><th>Persona</th><th>Codice</th><th>Stato</th><th>Computer (nome scelto · sistema · versione · ultimo accesso)</th><th></th></tr></thead>
+      <tbody id="rows"><tr><td colspan="5" class="mute">Nessun invito ancora.</td></tr></tbody>
+    </table></div>
+    <p class="note">Una copia verifica il codice al più una volta al giorno; senza rete continua per 7 giorni. Una revoca ferma OMNIA alla verifica successiva. Il server non riceve documenti, nomi di file, ricerche o password.</p>
+  </section>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+let KEY = '';
+try { KEY = sessionStorage.getItem('omnia_admin') || ''; } catch (e) {}
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const quando = iso => { if (!iso) return '—'; const d = new Date(iso), g = (Date.now() - d) / 864e5;
+  return g < 1 ? 'oggi ' + d.toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'}) : g < 2 ? 'ieri' : Math.floor(g) + ' giorni fa'; };
+async function call(path, body) {
+  const r = await fetch('https://omnia-inviti.fancy-snow-8c71.workers.dev/admin/api/' + path, {method: body ? 'POST' : 'GET', headers: {'authorization': 'Bearer ' + KEY, 'content-type': 'application/json'}, body: body ? JSON.stringify(body) : undefined});
+  const j = await r.json().catch(() => ({ok: false, motivo: 'risposta non valida'}));
+  if (r.status === 401) { lock('Chiave non valida.'); throw new Error('401'); }
+  if (!r.ok || !j.ok) { avviso((j && j.motivo) || `Il server ha risposto ${r.status}: riprova tra poco.`); throw new Error(String(r.status)); }
+  avviso(''); return j;
+}
+function avviso(t) { const el = $('mErr'); if (el) { el.textContent = t; el.hidden = !t; } }
+function lock(msg) { KEY = ''; try { sessionStorage.removeItem('omnia_admin'); } catch (e) {} $('app').hidden = true; $('gate').hidden = false; $('esci').hidden = true; $('mKey').textContent = msg || ''; }
+async function load() {
+  const j = await call('inviti');
+  $('gate').hidden = true; $('app').hidden = false; $('esci').hidden = false;
+  const inv = j.inviti || [];
+  const pcs = inv.flatMap(i => i.computer);
+  $('tInv').textContent = inv.length; $('tAtt').textContent = inv.filter(i => !i.revocato_il).flatMap(i => i.computer).length; $('tRev').textContent = inv.filter(i => i.revocato_il).length;
+  $('t7').textContent = pcs.filter(p => Date.now() - new Date(p.ultimo_accesso) < 7 * 864e5).length;
+  $('rows').innerHTML = inv.length ? inv.map(i => {
+    const st = i.revocato_il ? '<span class="pill bad">revocato</span>' : i.computer.length ? '<span class="pill ok">attivo</span>' : '<span class="pill warn">da attivare</span>';
+    const pc = i.computer.map(p => `<div class="pc"><div>${esc(p.nome)} · ${esc(p.sistema)} · ${esc(p.versione)}<small>attivato ${quando(p.attivato_il)} · ultimo accesso ${quando(p.ultimo_accesso)}</small></div>
+      <button class="small" data-op="togli-computer" data-c="${esc(i.codice)}" data-m="${esc(p.macchina)}" type="button">Togli</button></div>`).join('') || '<span class="mute">nessuno</span>';
+    const sc = (i.scaricamenti || []).map(x => `${esc(x.versione)} ${x.tipo === 'aggiornamento' ? 'agg.' : ''} ${quando(x.quando)}`).join('<br>');
+    return `<tr><td>${esc(i.per)}${i.nota ? `<small class="mute" style="display:block">${esc(i.nota)}</small>` : ''}</td><td><code>${esc(i.leggibile)}</code></td><td>${st}<small class="mute" style="display:block;margin-top:6px">${i.computer.length}/${i.max_computer} computer</small></td><td>${pc}${sc ? `<small class="mute" style="display:block;margin-top:6px">scaricato: ${sc}</small>` : ''}</td>
+      <td><div class="acts">${i.revocato_il ? `<button class="small" data-op="riattiva" data-c="${esc(i.codice)}" type="button">Riattiva</button>` : `<button class="small" data-op="revoca" data-c="${esc(i.codice)}" type="button">Revoca</button>`}</div></td></tr>`;
+  }).join('') : '<tr><td colspan="5" class="mute">Nessun invito ancora.</td></tr>';
+}
+$('rows').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-op]'); if (!b) return;
+  const op = b.dataset.op;
+  if ((op === 'revoca' || op === 'togli-computer') && b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Conferma'; setTimeout(() => { b.dataset.sure = ''; b.textContent = op === 'revoca' ? 'Revoca' : 'Togli'; }, 4000); return; }
+  try { await call(op, {codice: b.dataset.c, macchina: b.dataset.m}); } catch (err) { return; }  // errore: resta l'ultimo elenco valido
+  load().catch(() => {});
+});
+$('fKey').addEventListener('submit', async e => {
+  e.preventDefault(); KEY = $('key').value.trim(); $('key').value = '';
+  try { await load(); try { sessionStorage.setItem('omnia_admin', KEY); } catch (e2) {} $('mKey').textContent = ''; } catch (err) {}
+});
+$('fNew').addEventListener('submit', async e => {
+  e.preventDefault();
+  let j;
+  try { j = await call('nuovo', {per: $('per').value, nota: $('nota').value, max_computer: $('maxc').value}); } catch (err) { return; }
+  $('mNew').textContent = ''; $('newCode').textContent = j.codice; $('newBox').classList.add('on'); $('per').value = $('nota').value = ''; load();
+});
+$('copy').addEventListener('click', () => { navigator.clipboard?.writeText($('newCode').textContent).then(() => $('copy').textContent = 'Copiato', () => {}); });
+$('esci').addEventListener('click', () => lock(''));
+if (KEY) load().catch(() => {});
+})();
+</script>
+</body>
+</html>
